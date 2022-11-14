@@ -1,0 +1,11 @@
+1,assignment,one,10
+2,quiz,1,5
+3,assignment,two,10
+4,quiz,2,5
+5,assignment,three,10
+invalid,assessment,id,100
+6,quiz,3,5
+7,oops,bad,data
+7,assignment,four,10
+8,too,many,60,values
+8,exam,final,60

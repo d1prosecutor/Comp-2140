@@ -1,0 +1,4 @@
+1,assignment,one,10
+2,test,midterm,20
+3,assignment,two,10
+4,exam,final,60
