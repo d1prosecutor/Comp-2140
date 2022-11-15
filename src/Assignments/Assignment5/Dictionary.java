@@ -480,7 +480,15 @@ public class Dictionary
 
         public int getChildCount()
         {
-            return numIndexValues + 1;
+
+            int numChildren = 0;
+
+            if (!isLeaf)
+            {
+                numChildren = numIndexValues + 1;
+            }
+
+            return numChildren;
         }
 
     }
