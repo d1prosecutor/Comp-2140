@@ -74,7 +74,7 @@ class interviewPrep
         Collections.sort(temp);
         graph.put(9, temp);
 
-        System.out.println(minWindowSubString("ADCFEBECEABEBDFCDFCBFCBEAD", "BEAD"));
+        System.out.println(minSubstringContainingSmall("CHUKWUNAZA", "NAZA"));
     }
 
     public static List<Integer> DFS(HashMap<Integer, List<Integer>> graph)
@@ -252,7 +252,7 @@ class interviewPrep
     }
 
 
-    public static String minWindowSubString(String big, String small)
+    public static String minSubstringContainingSmall(String big, String small)
     {
         String result = "";
 
