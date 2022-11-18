@@ -74,6 +74,7 @@ class interviewPrep
         Collections.sort(temp);
         graph.put(9, temp);
 
+        int[] temp1 = maxSlidingWindow(new int[]{7,2,4}, 2);
     }
 
     public static List<Integer> DFS(HashMap<Integer, List<Integer>> graph)
@@ -376,39 +377,84 @@ class interviewPrep
         return maxArea;
     }
 
-    public int[] maxSlidingWindow(int[] array, int windowSize)
+//    public static int[] maxSlidingWindow(int[] array, int windowSize)
+//    {
+//        if (array == null || windowSize <= 0)
+//        {
+//            return new int[0];
+//        }
+//
+//        int arrLen = array.length;
+//        int[] resultArr = new int[arrLen - windowSize + 1];
+//        int resultArrCounter = 0;
+//
+//        // store index
+//        Deque<Integer> q = new ArrayDeque<>();
+//
+//        for (int i = 0; i < array.length; i++)
+//        {
+//            // remove numbers out of range of the windowSize
+//            while (!q.isEmpty() && q.peek() < i - windowSize + 1)
+//            {
+//                q.poll();
+//            }
+//
+//
+//            // remove smaller numbers in k range as they are useless
+//            while (!q.isEmpty() && array[q.peekLast()] < array[i])
+//            {
+//                q.pollLast();
+//            }
+//            // q contains index... r contains content
+//            q.offer(i);
+//
+//            if (i - 1 >= windowSize)
+//            {
+//                resultArr[resultArrCounter++] = array[q.peek()];
+//            }
+//        }
+//        return resultArr;
+//    }
+
+    public static int[] maxSlidingWindow(int[] arr, int windowSize)
     {
-        if (array == null || windowSize <= 0)
+        if (arr == null || windowSize <= 0)
         {
             return new int[0];
+        } else if (windowSize == 1)
+        {
+            return arr;
         }
 
-        int arrLen = array.length;
+        Deque<Map.Entry<Integer, Integer>> window = new ArrayDeque<>();
+
+        int arrLen = arr.length;
         int[] resultArr = new int[arrLen - windowSize + 1];
-        int resultArrCounter = 0;
+        int counter = 0;
 
-        // store index
-        Deque<Integer> q = new ArrayDeque<>();
-
-        for (int i = 0; i < array.length; i++)
+        for (int i = 0; i < arrLen; i++)
         {
-            // remove numbers out of range of the windowSize
-            while (!q.isEmpty() && q.peek() < i - windowSize + 1)
+            while (!window.isEmpty() && window.peekLast().getValue() < arr[i])
             {
-                q.poll();
+                window.pollLast();
             }
 
-            // remove smaller numbers in k range as they are useless
-            while (!q.isEmpty() && array[q.peekLast()] < array[i])
+            window.offer(new AbstractMap.SimpleEntry<>(i, arr[i]));
+
+            if (!window.isEmpty() && window.peek().getKey() < i - windowSize + 1)
             {
-                q.pollLast();
+                window.poll();
             }
-            // q contains index... r contains content
-            q.offer(i);
-            if (i - 1 >= windowSize)
+
+            if (i + 1 >= windowSize)
             {
-                resultArr[resultArrCounter++] = array[q.peek()];
+                resultArr[counter++] = window.peek().getValue();
             }
+        }
+
+        for (int i : resultArr)
+        {
+            System.out.println(i);
         }
         return resultArr;
     }
