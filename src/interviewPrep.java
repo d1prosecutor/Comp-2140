@@ -375,4 +375,41 @@ class interviewPrep
 
         return maxArea;
     }
+
+    public int[] maxSlidingWindow(int[] array, int windowSize)
+    {
+        if (array == null || windowSize <= 0)
+        {
+            return new int[0];
+        }
+
+        int arrLen = array.length;
+        int[] resultArr = new int[arrLen - windowSize + 1];
+        int resultArrCounter = 0;
+
+        // store index
+        Deque<Integer> q = new ArrayDeque<>();
+
+        for (int i = 0; i < array.length; i++)
+        {
+            // remove numbers out of range of the windowSize
+            while (!q.isEmpty() && q.peek() < i - windowSize + 1)
+            {
+                q.poll();
+            }
+
+            // remove smaller numbers in k range as they are useless
+            while (!q.isEmpty() && array[q.peekLast()] < array[i])
+            {
+                q.pollLast();
+            }
+            // q contains index... r contains content
+            q.offer(i);
+            if (i - 1 >= windowSize)
+            {
+                resultArr[resultArrCounter++] = array[q.peek()];
+            }
+        }
+        return resultArr;
+    }
 }
