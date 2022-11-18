@@ -74,7 +74,7 @@ class interviewPrep
         Collections.sort(temp);
         graph.put(9, temp);
 
-        System.out.println(minSubstringContainingSmall("CHUKWUNAZA", "NAZA"));
+        System.out.println(trappingWater(new int[]{1,0, 2, 3, 4, 5}));
     }
 
     public static List<Integer> DFS(HashMap<Integer, List<Integer>> graph)
@@ -275,7 +275,7 @@ class interviewPrep
 
             //Now start the Sliding window from the beginning of the Big String
             //Start both left and Right pointers at 0 since the sub string being looked for might be just a character and we want to consider
-            //all substrings of the big string whiich include the single characters in the big string
+            //all substrings of the big string which include the single characters in the big string
 
             int windowLeft = 0;
 
@@ -285,7 +285,7 @@ class interviewPrep
             //Char array containing the big string
             char[] bigString = big.toCharArray();
 
-            //Variable for the number of conditions satisfied foe the bigString to contain the subString
+            //Variable for the number of conditions satisfied for the bigString to contain the subString
             //Big string must contain all the distinct characters in the sub string
             //Their frequencies must match
             int conditions = 0;
@@ -319,4 +319,33 @@ class interviewPrep
         }
         return result;
     }
+
+    public static int trappingWater(int[] heights)
+    {
+        int maxWater = 0;
+        int maxLeft = heights[0];
+        int maxRight = heights[heights.length - 1];
+
+        int left = 0;
+        int right = heights.length - 1;
+
+        while (left < right)
+        {
+            if (maxLeft < maxRight)
+            {
+                left++;
+                maxLeft = Integer.max(maxLeft, heights[left]);
+                maxWater += maxLeft - heights[left];
+            } else
+            {
+                right--;
+                maxRight = Integer.max(maxRight, heights[right]);
+                maxWater += maxRight - heights[right];
+            }
+        }
+
+        return maxWater;
+    }
+
+
 }
