@@ -74,7 +74,6 @@ class interviewPrep
         Collections.sort(temp);
         graph.put(9, temp);
 
-        System.out.println(trappingWater(new int[]{1,0, 2, 3, 4, 5}));
     }
 
     public static List<Integer> DFS(HashMap<Integer, List<Integer>> graph)
@@ -347,5 +346,33 @@ class interviewPrep
         return maxWater;
     }
 
+    public static int maxRectInHistogram(int[] heights)
+    {
+        int arrLen = heights.length;
+        Stack<Map.Entry<Integer, Integer>> rects = new Stack<>();
+        int maxArea = 0;
 
+        for (int i = 0; i < arrLen; i++)
+        {
+            int index = i;
+
+            while (!rects.isEmpty() && heights[i] < rects.peek().getValue())
+            {
+                int prevIndex = rects.peek().getKey();
+                int prevVal = rects.pop().getValue();
+
+                maxArea = Integer.max(maxArea, prevVal * (i - prevIndex));
+                index = prevIndex;
+            }
+
+            rects.push(new AbstractMap.SimpleEntry<>(index, heights[i]));
+        }
+
+        for (Map.Entry<Integer, Integer> entry : rects)
+        {
+            maxArea = Integer.max(maxArea, entry.getValue());
+        }
+
+        return maxArea;
+    }
 }
