@@ -57,6 +57,11 @@ public class heap
         theFile.close();
     }
 
+    public heap(int size)
+    {
+        heapArray = new int[size];
+        heapSize = 0;
+    }
 
     /**************************************************************
      * retrieveMax                                                 *
@@ -94,16 +99,20 @@ public class heap
      *          The index of the element that may have messed up    *
      *          the heap ordering.                                  *
      ***************************************************************/
+
+    /*******************************************************************
+     * Sift Down Iterative                                                     *
+     *******************************************************************/
     private void siftDown(int i)
     {
         int index = i;
         int leftPosition;
         int rightChildPos;
 
-        while (((rightChildPos = (2 * index) + 2) < heapSize) && (heapArray[index] < heapArray[leftPosition = (2 * index) + 1] ||
+        while (((rightChildPos = (2 * index) + 2) < heapSize) && (heapArray[index] < heapArray[(leftPosition = (2 * index) + 1)] ||
                 heapArray[index] < heapArray[rightChildPos]))
         {
-            if (heapArray[rightChildPos] > heapArray[index])
+            if (heapArray[rightChildPos] > heapArray[leftPosition])
             {
                 swap(heapArray, index, rightChildPos);
                 index = rightChildPos;
@@ -124,33 +133,42 @@ public class heap
         }
     }
 
-    private void siftDown(int start, int leftChildPos, int rightChildPos)
+    /*******************************************************************
+     * Sift Down recursive                                                     *
+     *******************************************************************/
+    private void siftDownR(int i)
+    {
+        siftDownR(i, (2 * i) + 1, (2 * i) + 2);
+    }
+
+    private void siftDownR(int start, int leftChildPos, int rightChildPos)
     {
         if (start >= heapSize)
             return;
 
         if (rightChildPos < heapSize)
         {
-            if (heapArray[start] >= heapArray[leftChildPos] && heapArray[start] >= heapArray[rightChildPos])
-                return;
-            else if (heapArray[rightChildPos] >= heapArray[leftChildPos])
+            if (heapArray[start] < heapArray[leftChildPos] || heapArray[start] < heapArray[rightChildPos])
             {
-                swap(heapArray, start, rightChildPos);
-                siftDown(rightChildPos, (rightChildPos * 2) + 1, (rightChildPos * 2) + 2);
-            } else
-            {
-                swap(heapArray, start, leftChildPos);
-                siftDown(leftChildPos, (leftChildPos * 2) + 1, (leftChildPos * 2) + 2);
+                if (heapArray[rightChildPos] >= heapArray[leftChildPos])
+                {
+                    swap(heapArray, start, rightChildPos);
+                    siftDownR(rightChildPos, (rightChildPos * 2) + 1, (rightChildPos * 2) + 2);
+                } else
+                {
+                    swap(heapArray, start, leftChildPos);
+                    siftDownR(leftChildPos, (leftChildPos * 2) + 1, (leftChildPos * 2) + 2);
+                }
             }
         } else if (leftChildPos < heapSize)
         {
             if (heapArray[start] < heapArray[leftChildPos])
             {
-                swap(heapArray, start, rightChildPos);
-                siftDown(rightChildPos, (rightChildPos * 2) + 1, (rightChildPos * 2) + 2);
+                swap(heapArray, start, leftChildPos);
             }
         }
     }
+
 
     private void swap(int[] arr, int i, int j)
     {
@@ -209,6 +227,53 @@ public class heap
             heapArray[i] = result;
         }
         heapSize = tempSize; // So printHeap works.
+    }
+
+
+    /*******************************************************************
+     * Insert                                                             *
+     *******************************************************************/
+    public void insert(int value)
+    {
+        if (heapSize < heapArray.length)
+        {
+            heapArray[heapSize++] = value;
+
+            siftUp(heapSize - 1);
+        }
+    }
+
+    private void siftUp(int index)
+    {
+        siftUpR(index, (index - 1) / 2);
+    }
+
+    /*******************************************************************
+     * Sift Up recursive                                                     *
+     *******************************************************************/
+    private void siftUpR(int index, int parentPosition)
+    {
+        if (index > 0)
+        {
+            if (heapArray[index] > heapArray[parentPosition])
+            {
+                swap(heapArray, index, parentPosition);
+                siftUpR(parentPosition, (parentPosition - 1) / 2);
+            }
+        }
+    }
+
+    /*******************************************************************
+     * Sift up Iterative                                                             *
+     *******************************************************************/
+    private void siftUpI(int index)
+    {
+        int i = index;
+        while (i > 0 && heapArray[i] > heapArray[(i - 1) / 2])
+        {
+            swap(heapArray, i, (i - 1) / 2);
+            i = (i - 1) / 2;
+        }
     }
 
     /*******************************************************************
