@@ -671,9 +671,10 @@ public class Dictionary
          * *************************************************/
         private int getChildCount()
         {
-
+            //The number of children of a leaf node is 0
             int numChildren = 0;
 
+            //The number of children of an interior node is one more than its number of indices
             if (!isLeaf)
             {
                 numChildren = numIndexValues + 1;
