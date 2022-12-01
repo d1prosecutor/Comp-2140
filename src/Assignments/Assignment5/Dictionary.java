@@ -166,7 +166,7 @@ public class Dictionary
                 if (null != lSearch && lSearch.parent.getChildCount() == 2)
                 {
                     lSearch.parent.insertAndSort3Children(data);
-                } else if (lSearch.parent.getChildCount() == 3)
+                } else if (null != lSearch && lSearch.parent.getChildCount() == 3)
                 {
                     //if there already exists 3 children at the spot to insert
                     //insert the new node then insert and push up that branch
@@ -240,7 +240,7 @@ public class Dictionary
          * Purpose: Goes to the node specified as lSearch which contains the data being searched for
          *
          * Input Parameters:
-         * lSearch: The data being searched for
+         * lSearch: The data being searched for in the tree
          *
          * Output Parameters:
          * The output is the node which contains the data being searched for
