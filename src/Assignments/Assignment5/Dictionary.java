@@ -132,8 +132,6 @@ public class Dictionary
                 root = new TwoThreeNode(rootData, root.parent, leftChild, rightChild);
 
                 //Update the parent link
-                leftChild.setParent(root);
-                rightChild.setParent(root);
             } else
             {
                 //update root index as the new node being inserted
@@ -143,9 +141,10 @@ public class Dictionary
                 root = new TwoThreeNode(data, root.parent, leftChild, rightChild);
 
                 //Update the parent link
-                leftChild.setParent(root);
-                rightChild.setParent(root);
             }
+
+            leftChild.setParent(root);
+            rightChild.setParent(root);
         } else
         {
             //if there already exists a tree with at least 2 leaf Nodes
@@ -164,9 +163,9 @@ public class Dictionary
 
                 //If the position to insert the new node already has 2 nodes as children /
                 //insert the third child and update the parent index
-                if (lSearch.parent.getChildCount() == 2)
+                if (null != lSearch && lSearch.parent.getChildCount() == 2)
                 {
-                    lSearch.parent.sortAndInsert3Children(data);
+                    lSearch.parent.insertAndSort3Children(data);
                 } else if (lSearch.parent.getChildCount() == 3)
                 {
                     //if there already exists 3 children at the spot to insert
@@ -266,7 +265,7 @@ public class Dictionary
          * Input Parameters:
          * data: The data of the new Node to be inserted
          ***************************************************************/
-        public void sortAndInsert3Children(String data)
+        public void insertAndSort3Children(String data)
         {
             int i = numIndexValues;
 

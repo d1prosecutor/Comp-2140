@@ -11,7 +11,7 @@ public class a5
     public static void main(String args[])
     {
         // create (and read in) our dictionary
-        Dictionary dictionary = new Dictionary("words.txt");
+        Dictionary dictionary = new Dictionary("unsortedWords.txt");
         // hold the invalid words and their line numbers
         Words bad_words = new Words();
         int line = 0;
