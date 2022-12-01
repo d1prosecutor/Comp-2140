@@ -13,7 +13,7 @@ package Assignments.Assignment5;
 import java.io.*;
 import java.util.*;
 
-// This is my Tree ADT that will hold my list of dictionary words.
+// This is my 2-3 Tree ADT that will hold my list of dictionary words.
 public class Dictionary
 {
     /*******************************************************************************
@@ -33,10 +33,6 @@ public class Dictionary
      * Input Parameters:
      * fileName: the name of the dictionary file
      ********************************************************/
-    public Dictionary()
-    {
-    }
-
     public Dictionary(String fileName)
     {
         String read_word;
@@ -73,7 +69,7 @@ public class Dictionary
         }
     }
 
-    /********************************************************
+    /*****************************************************************************
      * lookup
      *
      * Purpose: searches for the node with a specified data
@@ -82,8 +78,8 @@ public class Dictionary
      * lSearch: the value to be searched for.
      *
      * Output Parameters:
-     * dataFound: a boolean representing if the Node containing the data was found or not
-     ********************************************************/
+     * dataFound: a boolean representing if the Node containing the data was found
+     *****************************************************************************/
     public boolean lookup(String lSearch)
     {
         // search for the word in the tree in lower case to ensure reliability
@@ -135,6 +131,7 @@ public class Dictionary
 
                 root = new TwoThreeNode(rootData, root.parent, leftChild, rightChild);
 
+                //Update the parent link
                 leftChild.setParent(root);
                 rightChild.setParent(root);
             } else
@@ -145,6 +142,7 @@ public class Dictionary
 
                 root = new TwoThreeNode(data, root.parent, leftChild, rightChild);
 
+                //Update the parent link
                 leftChild.setParent(root);
                 rightChild.setParent(root);
             }
@@ -296,7 +294,8 @@ public class Dictionary
          * *****    when one more child is inserted (making it 3 children)
          *
          * Input Parameters:
-         * data: The data of the new Node to be inserted
+         * firstIndex: The Interior Node's first index
+         * secondIndex: The interior Node's second index
          **********************************************************************************************/
         public void update2NodeParentIndex(String firstIndex, String secondIndex)
         {
@@ -317,9 +316,11 @@ public class Dictionary
          * leftChild: The left Child of the interior parent node
          * rightChild: The right Child of the interior parent node
          **********************************************************************************************/
-        public void splitAndPushUp(String newData, TwoThreeNode leftChild,
-                                   TwoThreeNode rightChild)
+        private void splitAndPushUp(String newData, TwoThreeNode leftChild,
+                                    TwoThreeNode rightChild)
         {
+            //If the current node does not have a parent, then the node being
+            // pushed up should become the new root of the tree
             if (null == parent)
             {
                 root = new TwoThreeNode(newData, null, leftChild, rightChild);
@@ -327,7 +328,12 @@ public class Dictionary
                 rightChild.setParent(root);
             } else if (parent.getChildCount() == 2)
             {
+                //If the parent node has just two children then it has just 1 index
+                //insert the index being pushed up alongside the already existing index
+
                 boolean isRightPosition;
+
+                //Check if the node is being pushed up is from the right or left and insert accordingly
                 if (this == parent.child[0])
                 {
                     isRightPosition = false;
@@ -340,12 +346,14 @@ public class Dictionary
 
             } else if (parent.getChildCount() == 3)
             {
+                //If splitting and pushing up a leaf
                 if (this.isLeaf)
                 {
+                    //Make a copy of the current children Nodes before splitting
                     TwoThreeNode[] tempChildren = new TwoThreeNode[parent.child.length + 1];
                     System.arraycopy(parent.child, 0, tempChildren, 0, parent.child.length);
 
-                    //First sort the 4 Children to decide how to split them
+                    //First insert the new child and sort the 4 Children to decide how to split them
                     parent.insertAndSortOverFlowLeaf(tempChildren, newData);
 
                     //Store the previous parent's indices to figure out which one should be pushed up
@@ -353,11 +361,11 @@ public class Dictionary
                     String prevParentLastIndex = parent.key[1];
 
                     //Get the index which should be pushed up
-                    String indexToPush = indexToPush(newData, prevParentFirstIndex, prevParentLastIndex,
+                    String indexToPush = leafIndexToPush(newData, prevParentFirstIndex, prevParentLastIndex,
                             tempChildren[1].key[0], tempChildren[3].key[0]);
 
                     //Keep a copy of previous Parent before the parent is updated
-                    // (to avoid losing the link to the original parent))
+                    //(to avoid losing the link to the original parent))
                     TwoThreeNode prevParent = parent;
 
                     /********************************************************
@@ -384,13 +392,18 @@ public class Dictionary
                     prevParent.splitAndPushUp(indexToPush, newParentFirstIndex, newParentSecondIndex);
                 } else
                 {
-                    int numItems = parent.child.length - 1;
+                    //If splitting and pushing up an interior node
+
+                    int numChildren = parent.child.length - 1;
                     TwoThreeNode[] tempInteriorChildren = new TwoThreeNode[parent.child.length + 1];
 
+                    //Get the index of the current node from the parent's children array
                     int childIndex = getChildIndex();
+
+                    //Make a copy of the previous Children Nodes
                     int tempInteriorChildrenCounter = 0;
                     int i = 0;
-                    while (i < parent.child.length && tempInteriorChildrenCounter < numItems)
+                    while (i < parent.child.length && tempInteriorChildrenCounter < numChildren)
                     {
                         if (i != childIndex)
                         {
@@ -400,15 +413,15 @@ public class Dictionary
                     }
 
                     //Insert the left and right children one after the other in sorted order
-                    parent.insertAndSortOverFlowIndex(tempInteriorChildren, leftChild, numItems++);
-                    parent.insertAndSortOverFlowIndex(tempInteriorChildren, rightChild, numItems);
+                    parent.insertAndSortOverFlowInterior(tempInteriorChildren, leftChild, numChildren++);
+                    parent.insertAndSortOverFlowInterior(tempInteriorChildren, rightChild, numChildren);
 
                     //Store the previous parent's indices to figure out which one should be pushed up
                     String prevParentFirstIndex = parent.key[0];
                     String prevParentLastIndex = parent.key[1];
 
-                    //Get the index which should be pushed up among the previous parent's indices and the new
-                    // index
+                    //Get the index which should be pushed up among the previous parent's indices
+                    // and the new index
                     ArrayList<String> indices = interiorIndexToPush(newData, prevParentFirstIndex, prevParentLastIndex);
                     String indexToPush = indices.get(1);
 
@@ -443,37 +456,79 @@ public class Dictionary
 
         }
 
-        //Inserts a 4th child thereby causing the Node to overfilled
-        //It also sorts these 4 children so that the splitting can be easy
-        public void insertAndSortOverFlowLeaf(TwoThreeNode[] unSortedChildren, String newChild)
+        /*****************************************************************************
+         * insertAndSortOverFlowInterior
+         *
+         * Purpose: Inserts a 4th child thereby causing the Node to overfilled
+         *          It also sorts these 4 children so that the splitting can be easy
+         *
+         * Input Parameters:
+         * unsortedChildren: Array containing the children Nodes (siblings)
+         * newChild: The new child to be inserted
+         ***************************************************************************/
+
+        private void insertAndSortOverFlowLeaf(TwoThreeNode[] unSortedChildren, String newChild)
         {
             int i = numIndexValues;
+
+            //find the position to insert the new child
             while (i >= 0 && newChild.compareTo(unSortedChildren[i].key[0]) < 0)
             {
                 unSortedChildren[i + 1] = new TwoThreeNode(child[i].key[0], this);
                 i--;
             }
+
+            //insert the new child and update its parent link
             unSortedChildren[i + 1] = new TwoThreeNode(newChild, this);
         }
 
-        public void insertAndSortOverFlowIndex(TwoThreeNode[] unSortedChildren, TwoThreeNode newChild, int numItems)
+        /******************************************************************************
+         * insertAndSortOverFlowInterior
+         *
+         * Purpose: Inserts a new (3rd) index into an interior node containing 2 indices
+         *          and sorts the indices (causing the interior node to be overfilled)
+         *
+         * Input Parameters:
+         * unsortedChildren: Array containing the indices of the interior node
+         * newIndex: The new index to insert
+         * numItems: Number of items contained in the indices array
+         ****************************************************************************/
+        private void insertAndSortOverFlowInterior(TwoThreeNode[] unSortedIndices, TwoThreeNode newIndex, int numItems)
         {
             int i = numItems - 1;
-            while (i >= 0 && newChild.key[0].compareTo(unSortedChildren[i].key[0]) < 0)
+
+            //find the position to insert the new index
+            while (i >= 0 && newIndex.key[0].compareTo(unSortedIndices[i].key[0]) < 0)
             {
-                unSortedChildren[i + 1] = unSortedChildren[i];
+                unSortedIndices[i + 1] = unSortedIndices[i];
                 i--;
             }
-            unSortedChildren[i + 1] = newChild;
-            unSortedChildren[i + 1].setParent(this);
+
+            //insert the new index
+            unSortedIndices[i + 1] = newIndex;
+
+            //update the parent link
+            unSortedIndices[i + 1].setParent(this);
         }
 
 
+        /******************************************************************************
+         * leafIndexToPush
+         *
+         * Purpose: Sorts the siblings and chooses the node to be pushed up
+         *
+         * Input Parameters:
+         * newData: The new leaf to be inserted
+         * indices: List containing the parent's indices and the potential new indices
+         *
+         * Output parameters:
+         * pushLeaf - The leaf node to be pushed up
+         ****************************************************************************/
         //Returns the index which should be pushed up
-        public String indexToPush(String newData, String... indices)
+        private String leafIndexToPush(String newData, String... indices)
         {
-            String pushIndex = "";
-            ArrayList<String> indexList = new ArrayList<String>();
+            String pushLeaf = "";
+            ArrayList<String> indexList = new ArrayList<>();
 
             for (String index : indices)
             {
@@ -484,20 +539,35 @@ public class Dictionary
             }
 
             Collections.sort(indexList);
+
+            //Check if the node being inserted should get pushed up
+            //or a previous existing child node should be pushed up
             if (indexList.size() == 2)
             {
-                pushIndex = newData;
+                pushLeaf = newData;
             } else if (indexList.size() == 3)
             {
-                pushIndex = indexList.get(1);
+                pushLeaf = indexList.get(1);
             }
 
-            return pushIndex;
+            return pushLeaf;
         }
 
-        public ArrayList<String> interiorIndexToPush(String... indices)
+        /********************************************************************************************
+         * InteriorIndexToPush
+         *
+         * Purpose:Sorts the interior node's index array and returns it
+         *         (thereby facilitating the choice of the index to push up)
+         *
+         * Input Parameters:
+         * indices: List of indices of an interior node
+         *
+         * Output parameters:
+         * indexList - The sorted form of the
+         *******************************************************************************************/
+        private ArrayList<String> interiorIndexToPush(String... indices)
         {
-            ArrayList<String> indexList = new ArrayList<String>();
+            ArrayList<String> indexList = new ArrayList<>();
 
             for (String index : indices)
             {
@@ -512,31 +582,62 @@ public class Dictionary
             return indexList;
         }
 
-        //Joins the split children to the parent which was not previously full (contained 1 indexNode/2Children)
-        //Makes that parent full(Contain 3 children and 2 indices)
-        public void update2NodeParentLink(boolean isRightChild, TwoThreeNode firstChild, TwoThreeNode secondChild, String newIndex)
+
+        /****************************************************************************************
+         * update2NodeParentLink
+         *
+         * Purpose: Joins the split children to the parent which was not previously full
+         *          (contained 1 indexNode/ 2 Children)
+         *           Makes that parent full (Contain 3 children and 2 indices)
+         *
+         * Input Parameters:
+         * isRightChild: checks if the new index to be inserted should the second or first index
+         * firstChild: The first child of the current interior Node
+         * secondChild: The second child of the current interior Node
+         * newIndex: The new index to be added to the current interior node
+         ****************************************************************************************/
+        private void update2NodeParentLink(boolean isRightChild, TwoThreeNode firstChild,
+                                           TwoThreeNode secondChild, String newIndex)
         {
+            //if splitting the right child
             if (isRightChild)
             {
+                //make the 2 new children the middle and right children
                 child[1] = firstChild;
                 child[2] = secondChild;
+
+                //Just insert the new index as the second (right) index
                 update2NodeParentIndex(key[0], newIndex);
             } else
             {
-                //Move the Right Child one step to the right when you're splitting the left child
+                //if splitting the left child
+
+                //insert the 2 new children as the left and middle children
+                //First move the Right Child one step to the right
                 //So there is space to insert the 2 children recently split
                 child[2] = child[1];
-                child[0] = firstChild;
                 child[1] = secondChild;
+                child[0] = firstChild;
 
-                //Also shift the only index it contains one step to the right to insert the new(smaller index)
+
+                //Also shift the only index it contains at the moment
+                //one step to the right to insert the new (smaller index)
                 key[1] = key[0];
                 update2NodeParentIndex(newIndex, key[1]);
             }
 
         }
 
-        public int getChildIndex()
+        /***************************************************************************************************
+         * getChildIndex
+         *
+         * Purpose: Finds the index of a node as a child of its parent
+         *        (searches the parent's children array and finds the index of the given node in that array)
+         *
+         * Output parameters:
+         * childIndex - the index of the node as a child of its parent
+         **************************************************************************************************/
+        private int getChildIndex()
         {
             int childIndex = -1;
 
@@ -550,12 +651,25 @@ public class Dictionary
             return childIndex;
         }
 
-        public void setParent(TwoThreeNode newParent)
+        /************************************
+         * setParent
+         *
+         * Purpose: Sets the parent of a node
+         ***********************************/
+        private void setParent(TwoThreeNode newParent)
         {
             parent = newParent;
         }
 
-        public int getChildCount()
+        /**************************************************
+         * getChildCount
+         *
+         * Purpose: Gets the number of children a node has
+         *
+         * Output Parameters:
+         * numChildren: The number of children the node has
+         * *************************************************/
+        private int getChildCount()
         {
 
             int numChildren = 0;
