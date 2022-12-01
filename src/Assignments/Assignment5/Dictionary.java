@@ -77,7 +77,12 @@ public class Dictionary
      * lookup
      *
      * Purpose: searches for the node with a specified data
+     *
+     * Input Parameters:
      * lSearch: the value to be searched for.
+     *
+     * Output Parameters:
+     * dataFound: a boolean representing if the Node containing the data was found or not
      ********************************************************/
     public boolean lookup(String lSearch)
     {
@@ -103,15 +108,14 @@ public class Dictionary
      * insert
      *
      * Purpose: insert a node into the BST.
-     * Input: data is content of the node to be inserted.
+     * data: content of the node to be inserted.
      ********************************************************/
     public void insert(String data)
     {
-        //If the tree is empty just insert at the root
+        //If the tree is empty just make a new Node the root of the tree
         if (null == root)
         {
             //Tree is empty, the root should be the only Node after insertion
-
             root = new TwoThreeNode(data, null);
         } else if (null == root.child)
         {
@@ -122,8 +126,10 @@ public class Dictionary
             TwoThreeNode leftChild;
             TwoThreeNode rightChild;
 
+            //Update the root index with the maximum value between the previous root and its current sibling
             if (data.compareTo(rootData) < 0)
             {
+                //update root index as the previous root node
                 leftChild = new TwoThreeNode(data, null);
                 rightChild = new TwoThreeNode(rootData, null);
 
@@ -133,6 +139,7 @@ public class Dictionary
                 rightChild.setParent(root);
             } else
             {
+                //update root index as the new node being inserted
                 leftChild = new TwoThreeNode(rootData, null);
                 rightChild = new TwoThreeNode(data, null);
 
@@ -143,9 +150,11 @@ public class Dictionary
             }
         } else
         {
+            //if there already exists a tree with at least 2 leaf Nodes
+            //Check for the position to insert the new data if it doesn't already exist
             if (!lookup(data))
             {
-                //First of all go to the leaves to find where to insert using goToChild
+                //First of all go to the leaves to find where to insert using goToChild function
                 TwoThreeNode lSearch = root;
                 if (null != lSearch)
                 {
@@ -155,11 +164,15 @@ public class Dictionary
                     }
                 }
 
+                //If the position to insert the new node already has 2 nodes as children /
+                //insert the third child and update the parent index
                 if (lSearch.parent.getChildCount() == 2)
                 {
                     lSearch.parent.sortAndInsert3Children(data);
                 } else if (lSearch.parent.getChildCount() == 3)
                 {
+                    //if there already exists 3 children at the spot to insert
+                    //insert the new node then insert and push up that branch
                     lSearch.splitAndPushUp(data, null, null);
                 }
             }
@@ -172,6 +185,9 @@ public class Dictionary
      *******************************************************************************/
     private class TwoThreeNode
     {
+        /******************************************************************************
+         Instance Variables
+         *******************************************************************************/
         public TwoThreeNode parent;
         public TwoThreeNode[] child;
         String[] key;
@@ -184,7 +200,7 @@ public class Dictionary
          *
          * Purpose: creates a new leaf node with a given value
          *
-         * Input:
+         * Input Parameters:
          * dataItem: The data to be contained in the leaf
          * parentNode: The parent of the leaf node
          ******************************************************/
@@ -221,6 +237,17 @@ public class Dictionary
             isLeaf = false;
         }
 
+        /******************************************************************************************
+         * goToChild
+         *
+         * Purpose: Goes to the node specified as lSearch which contains the data being searched for
+         *
+         * Input Parameters:
+         * lSearch: The data being searched for
+         *
+         * Output Parameters:
+         * The output is the node which contains the data being searched for
+         *******************************************************************************************/
         public TwoThreeNode goToChild(String lSearch)
         {
             int childIndex = numIndexValues - 1;
@@ -232,14 +259,28 @@ public class Dictionary
             return child[childIndex + 1];
         }
 
+        /***************************************************************
+         * sortAndInsert3Children
+         *
+         * Purpose: Inserts a new node into a spot containing 2 children.
+         * *****    Sorts the 3 sibling nodes in the correct order
+         *
+         * Input Parameters:
+         * data: The data of the new Node to be inserted
+         ***************************************************************/
         public void sortAndInsert3Children(String data)
         {
             int i = numIndexValues;
+
+            //Uses a sorting algorithm to sort the siblings in order to
+            //insert the new node in the correct location
             while (i >= 0 && data.compareTo(child[i].key[0]) < 0)
             {
                 child[i + 1] = new TwoThreeNode(child[i].key[0], this);
                 i--;
             }
+
+            //Insert the new node
             child[i + 1] = new TwoThreeNode(data, this);
 
             //Update the indices contained in the parent Node which was just inserted into
@@ -248,6 +289,34 @@ public class Dictionary
             update2NodeParentIndex(smallestIndex, largestIndex);
         }
 
+        /**********************************************************************************************
+         * update2NodeParentIndex
+         *
+         * Purpose: Updates the indices contained in an interior node previously containing 2 children
+         * *****    when one more child is inserted (making it 3 children)
+         *
+         * Input Parameters:
+         * data: The data of the new Node to be inserted
+         **********************************************************************************************/
+        public void update2NodeParentIndex(String firstIndex, String secondIndex)
+        {
+            key[0] = firstIndex;
+            key[1] = secondIndex;
+
+            numIndexValues++;
+        }
+
+        /**********************************************************************************************
+         * splitAndPushUp
+         *
+         * Purpose: Updates the indices contained in an interior node previously containing 2 children
+         * *****    when one more child is inserted (making it 3 children)
+         *
+         * Input Parameters:
+         * newData: The data of the new Node to be inserted
+         * leftChild: The left Child of the interior parent node
+         * rightChild: The right Child of the interior parent node
+         **********************************************************************************************/
         public void splitAndPushUp(String newData, TwoThreeNode leftChild,
                                    TwoThreeNode rightChild)
         {
@@ -279,7 +348,7 @@ public class Dictionary
                     //First sort the 4 Children to decide how to split them
                     parent.insertAndSortOverFlowLeaf(tempChildren, newData);
 
-
+                    //Store the previous parent's indices to figure out which one should be pushed up
                     String prevParentFirstIndex = parent.key[0];
                     String prevParentLastIndex = parent.key[1];
 
@@ -287,24 +356,31 @@ public class Dictionary
                     String indexToPush = indexToPush(newData, prevParentFirstIndex, prevParentLastIndex,
                             tempChildren[1].key[0], tempChildren[3].key[0]);
 
-                    //Keep a copy of previous Parent before the parent is updated(to avoid losing the link to the original parent))
+                    //Keep a copy of previous Parent before the parent is updated
+                    // (to avoid losing the link to the original parent))
                     TwoThreeNode prevParent = parent;
 
-                    //Now split the two Interior Nodes to have 2 children each
+                    /********************************************************
+                     Now split the two Interior Nodes to have 2 children each
+                     *******************************************************/
+
+                    //Set the first parent
                     TwoThreeNode newParentFirstIndex = new TwoThreeNode(tempChildren[1].key[0], parent.parent,
                             tempChildren[0], tempChildren[1]);
 
-                    //Update the parents of the two children
+                    //Update the parents of the first two children
                     tempChildren[0].setParent(newParentFirstIndex);
                     tempChildren[1].setParent(newParentFirstIndex);
 
+                    //Set the second parent
                     TwoThreeNode newParentSecondIndex = new TwoThreeNode(tempChildren[3].key[0], parent.parent,
                             tempChildren[2], tempChildren[3]);
 
-                    //Update the parents of the two children
+                    //Update the parents of the second two children
                     tempChildren[2].setParent(newParentSecondIndex);
                     tempChildren[3].setParent(newParentSecondIndex);
 
+                    //Keep splitting and pushing up while there is still work left to do to balance the tree
                     prevParent.splitAndPushUp(indexToPush, newParentFirstIndex, newParentSecondIndex);
                 } else
                 {
@@ -327,31 +403,40 @@ public class Dictionary
                     parent.insertAndSortOverFlowIndex(tempInteriorChildren, leftChild, numItems++);
                     parent.insertAndSortOverFlowIndex(tempInteriorChildren, rightChild, numItems);
 
-                    //Get the index which should be pushed up
+                    //Store the previous parent's indices to figure out which one should be pushed up
                     String prevParentFirstIndex = parent.key[0];
                     String prevParentLastIndex = parent.key[1];
 
+                    //Get the index which should be pushed up among the previous parent's indices and the new
+                    // index
                     ArrayList<String> indices = interiorIndexToPush(newData, prevParentFirstIndex, prevParentLastIndex);
                     String indexToPush = indices.get(1);
 
-                    //Keep a copy of previous Parent before the parent is updated(to avoid losing the link to the original parent))
+                    //Keep a copy of previous Parent before the parent is updated
+                    // (to avoid losing the link to the original parent))
                     TwoThreeNode prevParent = parent;
 
-                    //Now split the two Interior Nodes to have 2 children each
+                    /********************************************************
+                     Now split the two Interior Nodes to have 2 children each
+                     *******************************************************/
+
+                    //Set the first parent
                     TwoThreeNode newParentFirstIndex = new TwoThreeNode(indices.get(0), parent.parent,
                             tempInteriorChildren[0], tempInteriorChildren[1]);
 
-                    //Update the parents of the two children
+                    //Update the parents of the first two children
                     tempInteriorChildren[0].setParent(newParentFirstIndex);
                     tempInteriorChildren[1].setParent(newParentFirstIndex);
 
+                    //Set the second parent
                     TwoThreeNode newParentSecondIndex = new TwoThreeNode(indices.get(2), parent.parent,
                             tempInteriorChildren[2], tempInteriorChildren[3]);
 
-                    //Update the parents of the two children
+                    //Update the parents of the second two children
                     tempInteriorChildren[2].setParent(newParentSecondIndex);
                     tempInteriorChildren[3].setParent(newParentSecondIndex);
 
+                    //Keep splitting and pushing up while there is still work left to do to balance the tree
                     prevParent.splitAndPushUp(indexToPush, newParentFirstIndex, newParentSecondIndex);
                 }
             }
@@ -449,14 +534,6 @@ public class Dictionary
                 update2NodeParentIndex(newIndex, key[1]);
             }
 
-        }
-
-        public void update2NodeParentIndex(String firstIndex, String secondIndex)
-        {
-            key[0] = firstIndex;
-            key[1] = secondIndex;
-
-            numIndexValues++;
         }
 
         public int getChildIndex()

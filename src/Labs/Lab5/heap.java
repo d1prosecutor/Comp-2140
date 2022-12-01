@@ -1,8 +1,5 @@
 package Labs.Lab5;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 public class heap
@@ -10,7 +7,6 @@ public class heap
 
     int[] heapArray; // The array containing the heap.
     int heapSize; // The number of elements currently stored in the heap.
-
 
     /*******************************************************************
      * CONSTRUCTOR                                                      *
@@ -20,9 +16,9 @@ public class heap
      *          of that size, and then read the elements into the       *
      *          heapArray.  The input file is "heapSortData.txt".       *
      *******************************************************************/
-    public heap() throws FileNotFoundException
+    public heap()
     {
-        Scanner theFile = new Scanner(new File("heapSortData.txt"));
+        Scanner theFile = new Scanner(System.in);
         String inLine;   // A line of input from BufferedReader in.
         String[] tokens; // the elements from a line of input.
 
@@ -109,6 +105,7 @@ public class heap
         int leftPosition;
         int rightChildPos;
 
+        //If the current node has 2 children and is less than at least one of them
         while (((rightChildPos = (2 * index) + 2) < heapSize) && (heapArray[index] < heapArray[(leftPosition = (2 * index) + 1)] ||
                 heapArray[index] < heapArray[rightChildPos]))
         {
@@ -122,7 +119,10 @@ public class heap
                 index = leftPosition;
             }
         }
+        //The while loop ends or doesn't run if the current node doesn't have 2 children or
+        //the heap is sorted
 
+        //If the current node has only 1 child, check if sorted and sort if not
         int last;
         if ((last = 2 * index + 1) < heapSize)
         {
@@ -143,28 +143,28 @@ public class heap
 
     private void siftDownR(int start, int leftChildPos, int rightChildPos)
     {
-        if (start >= heapSize)
-            return;
-
-        if (rightChildPos < heapSize)
+        if (start < heapSize)
         {
-            if (heapArray[start] < heapArray[leftChildPos] || heapArray[start] < heapArray[rightChildPos])
+            if (rightChildPos < heapSize)
             {
-                if (heapArray[rightChildPos] >= heapArray[leftChildPos])
+                if (heapArray[start] < heapArray[leftChildPos] || heapArray[start] < heapArray[rightChildPos])
                 {
-                    swap(heapArray, start, rightChildPos);
-                    siftDownR(rightChildPos, (rightChildPos * 2) + 1, (rightChildPos * 2) + 2);
-                } else
+                    if (heapArray[rightChildPos] >= heapArray[leftChildPos])
+                    {
+                        swap(heapArray, start, rightChildPos);
+                        siftDownR(rightChildPos, (rightChildPos * 2) + 1, (rightChildPos * 2) + 2);
+                    } else
+                    {
+                        swap(heapArray, start, leftChildPos);
+                        siftDownR(leftChildPos, (leftChildPos * 2) + 1, (leftChildPos * 2) + 2);
+                    }
+                }
+            } else if (leftChildPos < heapSize)
+            {
+                if (heapArray[start] < heapArray[leftChildPos])
                 {
                     swap(heapArray, start, leftChildPos);
-                    siftDownR(leftChildPos, (leftChildPos * 2) + 1, (leftChildPos * 2) + 2);
                 }
-            }
-        } else if (leftChildPos < heapSize)
-        {
-            if (heapArray[start] < heapArray[leftChildPos])
-            {
-                swap(heapArray, start, leftChildPos);
             }
         }
     }
@@ -279,7 +279,7 @@ public class heap
     /*******************************************************************
      * main                                                             *
      *******************************************************************/
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
         heap H = new heap();
 
