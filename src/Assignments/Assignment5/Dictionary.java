@@ -140,9 +140,9 @@ public class Dictionary
 
                 root = new TwoThreeNode(data, root.parent, leftChild, rightChild);
 
-                //Update the parent link
             }
 
+            //Update the parent link
             leftChild.setParent(root);
             rightChild.setParent(root);
         } else
