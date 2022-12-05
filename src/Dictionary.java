@@ -254,7 +254,7 @@ public class Dictionary
         }
 
         /***************************************************************
-         * sortAndInsert3Children
+         * insertAndSort3Children
          *
          * Purpose: Inserts a new node into a spot containing 2 children.
          * *****    Sorts the 3 sibling nodes in the correct order
@@ -403,9 +403,9 @@ public class Dictionary
         }
 
         /*****************************************************************************
-         * insertAndSortOverFlowInterior
+         * insertAndSortOverflowLeaf
          *
-         * Purpose: Inserts a 4th child thereby causing the Node to overfilled
+         * Purpose: Inserts a 4th leaf child thereby causing the children to be overfilled
          *          It also sorts these 4 children so that the splitting can be easy
          *
          * Input Parameters:
@@ -429,7 +429,7 @@ public class Dictionary
         }
 
         /******************************************************************************
-         * insertAndSortOverFlowInterior
+         * insertAndSortOverflowInterior
          *
          * Purpose: Inserts a new (3rd) index into an interior node containing 2 indices
          *          and sorts the indices (causing the interior node to be overfilled)
