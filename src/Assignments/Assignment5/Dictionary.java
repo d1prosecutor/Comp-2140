@@ -1,5 +1,8 @@
 package Assignments.Assignment5;
 
+import java.io.*;
+import java.util.*;
+
 /*****************************************************************************
  * NAME: Chukwunaza Chukwuocha
  * STUDENT NUMBER: 007928676
@@ -9,9 +12,6 @@ package Assignments.Assignment5;
  *
  * REMARKS: Implements a 2-3Tree ADT to store A dictionary used in SpellChecking
  *****************************************************************************/
-
-import java.io.*;
-import java.util.*;
 
 // This is my 2-3 Tree ADT that will hold my list of dictionary words.
 public class Dictionary
@@ -130,8 +130,6 @@ public class Dictionary
                 rightChild = new TwoThreeNode(rootData, null);
 
                 root = new TwoThreeNode(rootData, root.parent, leftChild, rightChild);
-
-                //Update the parent link
             } else
             {
                 //update root index as the new node being inserted
@@ -142,13 +140,13 @@ public class Dictionary
 
             }
 
-            //Update the parent link
+            //Update the parent link for the newly created children
             leftChild.setParent(root);
             rightChild.setParent(root);
         } else
         {
             //if there already exists a tree with at least 2 leaf Nodes
-            //Check for the position to insert the new data if it doesn't already exist
+            //Check for the position to insert the new data (if it doesn't already exist)
             if (!lookup(data))
             {
                 //First of all go to the leaves to find where to insert using goToChild function
