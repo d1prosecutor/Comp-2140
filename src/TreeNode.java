@@ -1,3 +1,5 @@
+import org.w3c.dom.Node;
+
 import java.util.*;
 
 class interviewPrep
@@ -73,6 +75,13 @@ class interviewPrep
         Collections.sort(temp);
         graph.put(9, temp);
 
+    }
+
+    public static List dijisktra()
+    {
+        PriorityQueue<Integer> ask = new PriorityQueue<Integer>();
+
+        return new ArrayList();
     }
 
     public int uniquePaths(int m, int n)

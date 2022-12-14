@@ -45,7 +45,7 @@ public class Table
 
         if (key.length() > 0)
         {
-            hashedIndex = hashRec(key, 0, hashConstant);
+            hashedIndex = hashRec(key, key.length() - 1, hashConstant);
         }
 
         return hashedIndex;
@@ -64,13 +64,14 @@ public class Table
     private static int hashRec(String key, int index, int hashConst)
     {
         int hashResult = 0;
-        if (index < key.length() - 1)
-        {
-            //Mod the result in each step to avoid integer overflow
-            hashResult = ((key.charAt(index) * hashConst) + hashRec(key, index + 1, hashConst)) % tableSize;
-        } else if (index == key.length() - 1)
+
+        if (index == 0)
         {
             hashResult = key.charAt(index);
+        } else if (index > 0)
+        {
+            //Mod the result in each step to avoid integer overflow
+            hashResult = ((hashRec(key, index - 1, hashConst) * hashConst) + key.charAt(index)) % tableSize;
         }
 
         return hashResult;
