@@ -180,6 +180,53 @@ public class Dictionary
         }
     }// end insertRec
 
+    public Dictionary()
+    {
+        root = null;
+    }
+
+    public boolean equals(TreeNode B)
+    {
+        boolean same = false;
+        if (B != null)
+            same = search(root, B);
+        return same;
+    }
+
+    public boolean search(TreeNode A, TreeNode B)
+    {
+        boolean same = false;
+        if (A != null)
+        {
+            same = compare(A, B);
+            if (same)
+            {
+                same = compare(A.left, B);
+                same = same && compare(A.right, B);
+            }
+        }
+        return same;
+    }
+
+    public boolean compare(TreeNode A, TreeNode B)
+    {
+        boolean same = false;
+        if (B != null)
+        {
+            if (A.word.equals(B.word))
+            {
+                same = true;
+            } else if (A.word.compareTo(B.word) < 0)
+            {
+                same = compare(A, B.left);
+            } else
+            {
+                same = compare(A, B.right);
+            }
+        }
+        return same;
+    }
+
     /************************************************************
      * printInorder
      *
