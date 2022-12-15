@@ -1,5 +1,7 @@
 package Labs.Lab5;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class heap
@@ -16,9 +18,9 @@ public class heap
      *          of that size, and then read the elements into the       *
      *          heapArray.  The input file is "heapSortData.txt".       *
      *******************************************************************/
-    public heap()
+    public heap() throws FileNotFoundException
     {
-        Scanner theFile = new Scanner(System.in);
+        Scanner theFile = new Scanner(new File("heapSortData.txt"));
         String inLine;   // A line of input from BufferedReader in.
         String[] tokens; // the elements from a line of input.
 
@@ -38,7 +40,6 @@ public class heap
             // Each line can contain more than one element.
 
             tokens = inLine.split("\\s+");
-            ;
 
             for (int i = 0; i < tokens.length; i++)
             {
@@ -214,7 +215,7 @@ public class heap
 
         // Heapify the unsorted array.
 
-        for (i = heapSize / 2; i >= 0; i--)
+        for (i = (heapSize - 2) / 2; i >= 0; i--)
         {
             siftDown(i);
         }
@@ -276,10 +277,23 @@ public class heap
         }
     }
 
+    public boolean checkHeap()
+    {
+        int heapIndex = heapSize - 1;
+        boolean valid = true;
+        for (int i = (heapIndex - 1) / 2; i >= 0 && valid; i--)
+        {
+            valid = heapArray[i] >= heapArray[(2 * i) + 1];
+            if ((2 * i) + 2 <= heapIndex)
+                valid = valid && (heapArray[i] >= heapArray[(2 * i + 2)]);
+        }
+        return valid;
+    }
+
     /*******************************************************************
      * main                                                             *
      *******************************************************************/
-    public static void main(String[] args)
+    public static void main(String[] args) throws FileNotFoundException
     {
         heap H = new heap();
 
@@ -290,6 +304,7 @@ public class heap
 
         // Sort array.
         H.heapSort();
+
 
         // Print sorted array.
 
